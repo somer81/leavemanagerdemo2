@@ -131,6 +131,13 @@ describe('checkSpec — full specs', () => {
     },
   );
 
+  it('fails a spec with more than one Design reference line', () => {
+    // Review round 1, F-5: two conflicting references must not pass on the first one alone.
+    const valid = `- Design reference: ${LINK} · version: spec 9999 approved · approved 2026-11-14`;
+    const spec = uiSpec('Approved', `${valid}\n- Design reference: see figma`);
+    expect(checkSpec(spec, 'f.md')).toEqual([expect.stringContaining('more than one')]);
+  });
+
   it('ignores a design reference that only appears inside an HTML comment', () => {
     const ux = `<!-- - Design reference: ${LINK} · version: v1 · approved 2026-11-14 -->\n- Flow: x`;
     expect(checkSpec(fullSpec('Approved', ux), 'f.md')).toHaveLength(1);

@@ -51,7 +51,12 @@ export function checkSpec(markdown: string, fileName: string): string[] {
     }
     const body = stripComments(userExperience).trim();
     if (body.startsWith(NO_UI)) return [];
-    const value = /^\s*- Design reference:[ \t]*(.*?)\s*$/m.exec(body)?.[1] ?? '';
+    const references = [...body.matchAll(/^\s*- Design reference:[ \t]*(.*?)\s*$/gm)];
+    if (references.length > 1) {
+      // Two references would leave "which one counts" open (review round 1, F-5).
+      return [`${fileName}: more than one "- Design reference:" line — keep exactly one`];
+    }
+    const value = references[0]?.[1] ?? '';
     if (isValidReference(value)) return [];
     const found = value === '' ? 'no Design reference' : `"${value}"`;
     return [`${fileName}: UI spec with ${found} — ${EXPECTED_FORMAT}`];
