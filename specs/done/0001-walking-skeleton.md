@@ -1,6 +1,6 @@
 # Spec 0001 — Walking skeleton
 
-- Status: In progress
+- Status: Shipped
 - Mode: lite
 - Plan: `specs/plans/0001-plan.md`
 - Self-critique: done
@@ -66,35 +66,56 @@ users, login, persistence of business data, and any other business rule.
 - Check leaves nothing running: the residue test is clean in both profiles (BUILD's Done, not a criterion).
 
 ## Acceptance criteria
-- [ ] AC-1 — Working days are counted Mon–Fri with both ends inclusive: Mon 2026-11-16 → Fri 2026-11-20 = 5;
+- [x] AC-1 — Working days are counted Mon–Fri with both ends inclusive: Mon 2026-11-16 → Fri 2026-11-20 = 5;
   Fri 2026-11-20 → Mon 2026-11-23 = 2; a single weekday (start = end, Wed 2026-11-18) = 1;
   Mon 2026-11-16 → Fri 2026-11-27 = 10.
-- [ ] AC-2 — A range whose end date is before its start date is rejected with error code `BR1_END_BEFORE_START`.
-- [ ] AC-3 — A range covering no Working day (Sat 2026-11-21 → Sun 2026-11-22; a single Saturday, start = end = 2026-11-21) is rejected with `BR1_NO_WORKING_DAY`.
-- [ ] AC-4 — A malformed date (`2026-1-5`, `20261105`, empty) or a non-existent date (`2026-02-30`, `2026-13-01`) is rejected with `INVALID_DATE`.
+- [x] AC-2 — A range whose end date is before its start date is rejected with error code `BR1_END_BEFORE_START`.
+- [x] AC-3 — A range covering no Working day (Sat 2026-11-21 → Sun 2026-11-22; a single Saturday, start = end = 2026-11-21) is rejected with `BR1_NO_WORKING_DAY`.
+- [x] AC-4 — A malformed date (`2026-1-5`, `20261105`, empty) or a non-existent date (`2026-02-30`, `2026-13-01`) is rejected with `INVALID_DATE`.
   A leap day in a leap year (`2028-02-29`) is accepted.
-- [ ] AC-5 — A health inquiry without a session is answered with success and a body containing only the ok indication (`{ "status": "ok" }`).
-- [ ] AC-6 — The start page shows "Checking service…" in a `role="status"` region while the status is being fetched.
-- [ ] AC-7 — When the service answers ok, the start page shows "Service: OK".
-- [ ] AC-8 — When the service is unreachable or answers with an error status, the start page shows "Service unavailable".
-- [ ] AC-9 — An import that breaks a forbidden dependency of `docs/architecture.md` (domain importing an
+- [x] AC-5 — A health inquiry without a session is answered with success and a body containing only the ok indication (`{ "status": "ok" }`).
+- [x] AC-6 — The start page shows "Checking service…" in a `role="status"` region while the status is being fetched.
+- [x] AC-7 — When the service answers ok, the start page shows "Service: OK".
+- [x] AC-8 — When the service is unreachable or answers with an error status, the start page shows "Service unavailable".
+- [x] AC-9 — An import that breaks a forbidden dependency of `docs/architecture.md` (domain importing an
   I/O or framework module or using the system clock; web importing api; an api route importing the
   repository) makes the lint step, and so `scripts/check`, fail.
-- [ ] AC-10 — `scripts/check` (full) and `scripts/check --fast` are green with every planned step active,
+- [x] AC-10 — `scripts/check` (full) and `scripts/check --fast` are green with every planned step active,
   and CI runs the full contract on Node 26 for every push and pull request, green on this spec's PR.
 
 ## Definition of Done
-- [ ] Every acceptance criterion mapped to proof (test or reproducible observation)
-- [ ] `scripts/check` green
-- [ ] Independent review done; real findings fixed, noise rejected with written rationale, deferred ones in `specs/backlog.md`
-- [ ] Docs / ADRs updated if behavior or architecture changed
-- [ ] Spec moved to `specs/done/` (it becomes immutable there)
+- [x] Every acceptance criterion mapped to proof (test or reproducible observation)
+- [x] `scripts/check` green
+- [x] Independent review done; real findings fixed, noise rejected with written rationale, deferred ones in `specs/backlog.md`
+- [x] Docs / ADRs updated if behavior or architecture changed
+- [x] Spec moved to `specs/done/` (it becomes immutable there)
+
+## Evidence (VERIFY)
+Independent QA agent, VERIFY round 1 @eff9e1e and AC-8 re-check @cee6f68. Full green for the shipped code: CI
+https://github.com/somer81/leavemanagerdemo2/actions/runs/43587265583 (`CHECK GREEN (full, 6 steps, 8 s)` @cee6f68).
+Reproduce any row with `./scripts/check` (on macOS: `dash ./scripts/check`, B-1).
+
+| Acceptance criterion | Evidence | Status |
+|---|---|---|
+| AC-1 | `packages/domain/src/working-days.test.ts` › "counts Mon–Fri inclusive" (4 cases) — broken: B1 inclusive end, B2 weekend | PASS |
+| AC-2 | `packages/domain/src/working-days.test.ts` › "rejects end before start" | PASS |
+| AC-3 | `packages/domain/src/working-days.test.ts` › "rejects a range with no working day" (2 cases) — broken: B2 | PASS |
+| AC-4 | `packages/domain/src/calendar-date.test.ts` › "rejects malformed and non-existent dates", "accepts a leap day"; `working-days.test.ts` › "reports INVALID_DATE before BR-1" — broken: B3 round-trip, B4 order | PASS |
+| AC-5 | `apps/api/src/routes/health.int.test.ts` › "answers ok without a session" (full profile) + `curl` against the real server — broken: B5 extra field, B5b value | PASS |
+| AC-6 | `apps/web/src/start-page.test.tsx` › "shows checking while fetching" + S-1 — probe: role removed → red | PASS |
+| AC-7 | `apps/web/src/start-page.test.tsx` › "shows OK when the service is up" + S-2, S-4 (real API) | PASS |
+| AC-8 | `apps/web/src/start-page.test.tsx` › "shows unavailable on error status", "… even when the body says ok", "… on network failure", "… when a 2xx answer is not the ok indication" + S-3, S-3b — broken: B6 `response.ok` check removed (after fix-2) | PASS |
+| AC-9 | `tools/lint-boundaries.test.ts` › 16 "forbids" + 7 "allows" cases with the real `eslint.config.js` (red before the rules existed) | PASS |
+| AC-10 | `scripts/check.conf` all 6 steps active; `CHECK GREEN (full …)` and `(fast …)`; CI on push and PR #2 with Node 26 from `.nvmrc`, green @cee6f68 | PASS |
+
+Screenshots S-1 Checking, S-2 Ok, S-3 Unavailable (500), S-3b Unavailable (network), S-4 real API end to end: agent-captured
+(headless Chromium, outside the repo), judged by somer81 at SHIP, 2026-11-14.
 
 ## Scorecard (fill at ship — honest numbers make the process improvable)
 | Metric | Value |
 |---|---|
-| Spec revisions | |
-| Fix rounds | |
-| Review findings: real / noise / deferred | |
-| Regressions introduced | |
-| Bugs escaped to production | |
+| Spec revisions | 0 |
+| Fix rounds | 2 |
+| Review findings: real / noise / deferred | 5 / 0 / 1 (review: 4/0/1 · VERIFY: 1/0/0) |
+| Regressions introduced | 0 |
+| Bugs escaped to production | 0 (not deployed) |
