@@ -1,6 +1,6 @@
 # Spec 0002 — Design artifact as the spec's design reference
 
-- Status: In progress
+- Status: Shipped
 - Mode: lite
 - Plan: `specs/plans/0002-plan.md`
 - Self-critique: done
@@ -59,34 +59,51 @@ tooling. It's used through spec files and the `scripts/check` output.)
 - Not a sensitive area.
 
 ## Acceptance criteria
-- [ ] AC-1 — `docs/testing.md` states the rule: a UI spec's Design reference is a Claude Design artifact link
+- [x] AC-1 — `docs/testing.md` states the rule: a UI spec's Design reference is a Claude Design artifact link
   with a pinned version showing every listed state, or a named waiver. VERIFY compares screenshots with that
   version. `docs/conventions.md` points to it.
-- [ ] AC-2 — `scripts/check` fails on an open spec whose User experience is a UI and whose Design reference has
+- [x] AC-2 — `scripts/check` fails on an open spec whose User experience is a UI and whose Design reference has
   no Claude Design artifact link, naming the spec file.
-- [ ] AC-3 — `scripts/check` fails on an open UI spec whose Design reference has an artifact link but no version identifier.
-- [ ] AC-4 — `scripts/check` passes for an open spec whose User experience is "none — no user interface".
-- [ ] AC-5 — `scripts/check` passes for an open UI spec with a Claude Design artifact link and a version identifier,
+- [x] AC-3 — `scripts/check` fails on an open UI spec whose Design reference has an artifact link but no version identifier.
+- [x] AC-4 — `scripts/check` passes for an open spec whose User experience is "none — no user interface".
+- [x] AC-5 — `scripts/check` passes for an open UI spec with a Claude Design artifact link and a version identifier,
   and for one with the waiver form.
-- [ ] AC-6 — `scripts/check` ignores specs in `specs/done/` (spec 0001 has no artifact link and check stays green).
-- [ ] AC-7 — A link that is not a Claude Design artifact link (e.g. another website, or a plain claude.ai chat link) does not satisfy AC-5.
-- [ ] AC-8 — `scripts/check` passes for an open UI spec in `Status: Draft` with no design reference yet, and fails for
+- [x] AC-6 — `scripts/check` ignores specs in `specs/done/` (spec 0001 has no artifact link and check stays green).
+- [x] AC-7 — A link that is not a Claude Design artifact link (e.g. another website, or a plain claude.ai chat link) does not satisfy AC-5.
+- [x] AC-8 — `scripts/check` passes for an open UI spec in `Status: Draft` with no design reference yet, and fails for
   the same spec once it is `Approved` or `In progress`.
-- [ ] AC-9 — `scripts/check` fails on an open UI spec whose Design reference is "none — the flow above is the design" (the
+- [x] AC-9 — `scripts/check` fails on an open UI spec whose Design reference is "none — the flow above is the design" (the
   ANEW template wording, G5) or a waiver missing its name, date or reason.
 
 ## Definition of Done
-- [ ] Every acceptance criterion mapped to proof (test or reproducible observation)
-- [ ] `scripts/check` green
-- [ ] Independent review done; real findings fixed, noise rejected with written rationale, deferred ones in `specs/backlog.md`
-- [ ] Docs / ADRs updated if behavior or architecture changed
-- [ ] Spec moved to `specs/done/` (it becomes immutable there)
+- [x] Every acceptance criterion mapped to proof (test or reproducible observation)
+- [x] `scripts/check` green
+- [x] Independent review done; real findings fixed, noise rejected with written rationale, deferred ones in `specs/backlog.md`
+- [x] Docs / ADRs updated if behavior or architecture changed
+- [x] Spec moved to `specs/done/` (it becomes immutable there)
+
+## Evidence (VERIFY)
+Independent QA agent, VERIFY @d5424f6. Full green for the shipped code: CI
+https://github.com/somer81/leavemanagerdemo2/actions/runs/43590189860 (`CHECK GREEN (full, 6 steps, 10 s)` @d02eccd; later
+commits touch `specs/` only). Reproduce with `./scripts/check` (on macOS: `dash ./scripts/check`, B-1). No UI, so no screenshots.
+
+| Acceptance criterion | Evidence | Status |
+|---|---|---|
+| AC-1 | `docs/testing.md` › "Design references (Claude Design artifacts)" (items 1–7) and "Evidence for UI criteria"; `docs/conventions.md` › "Design references": observation, grep -n -i "design reference" on both files | PASS |
+| AC-2 | `tools/spec-design-reference.test.ts` › "fails a UI spec without an artifact link" + end-to-end probe (an Approved UI spec in a temp copy's `specs/active/` turned `check --fast` red, naming the file) | PASS |
+| AC-3 | `tools/spec-design-reference.test.ts` › "fails a link without a version" (3 variants) — broken: B1 optional version | PASS |
+| AC-4 | `tools/spec-design-reference.test.ts` › "passes a spec with no user interface" | PASS |
+| AC-5 | `tools/spec-design-reference.test.ts` › "passes an artifact link with a version" (both URL forms), "passes a complete waiver" | PASS |
+| AC-6 | `tools/spec-design-reference.test.ts` › "does not judge specs in specs/done" (temporary root) — broken: B3 also reading done/ | PASS |
+| AC-7 | `tools/spec-design-reference.test.ts` › "rejects links that are not Claude Design artifacts" (4 cases) — broken: B2 loosened host | PASS |
+| AC-8 | `tools/spec-design-reference.test.ts` › "exempts a Draft UI spec", "judges Approved and In progress", "judges a Status with a trailing comment like doctor does" | PASS |
+| AC-9 | `tools/spec-design-reference.test.ts` › "rejects the template wording", "rejects an incomplete waiver" (4 variants) + the end-to-end probe — broken: B4 optional reason | PASS |
 
 ## Scorecard (fill at ship — honest numbers make the process improvable)
 | Metric | Value |
 |---|---|
-| Spec revisions | |
-| Fix rounds | |
-| Review findings: real / noise / deferred | |
-| Regressions introduced | |
-| Bugs escaped to production | |
+| Spec revisions | 0 |
+| Fix rounds | 2 |
+| Review findings: real / noise / deferred | 6 / 0 / 0 (round 1: 5/0/0 · round 2: 1/0/0) |
+| Regressions introduced | 1 (F-6: the F-3 fix let a `- Source:` line skip the check — caught in review round 2, fixed before ship) |
+| Bugs escaped to production | 0 |
