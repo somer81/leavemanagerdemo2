@@ -1,6 +1,6 @@
 # Testing
 
-> **Template — filled during bootstrap.**
+> Set at bootstrap 2026-11-14.
 
 ## The contract
 - Every acceptance criterion maps to at least one test (criterion ↔ test map lives in the plan).
@@ -8,11 +8,40 @@
 - The whole suite runs inside `scripts/check` — one command, everywhere.
 
 ## Frameworks & layout
-<!-- Test framework(s), where tests live, naming pattern. -->
+- **Vitest** for every layer, always invoked as `vitest run`, never watch mode (`docs/conventions.md`, Known traps).
+- **Unit** (`packages/domain`): `*.test.ts` next to the code. Pure functions, no mocks needed.
+- **Integration** (`apps/api`): `*.int.test.ts`. Builds the Fastify app and drives it with
+  `app.inject()` (no real port), on a **fresh in-memory SQLite database per test** with seed data
+  created in the test. `await app.close()` after each test.
+- **Component** (`apps/web`): `*.test.tsx` with Testing Library + jsdom. The API is stubbed at the
+  `fetch` boundary, so no server is started.
+- **Fast/full selector:** the file suffix. Fast runs every `*.test.ts(x)` and excludes
+  `*.int.test.ts`. Full-only runs exactly `*.int.test.ts`. By construction every test lands in one
+  of the two (Two speeds, rule 4).
+- **Determinism (how this stack does it):** tests run with `TZ=UTC` and `LANG=en_US.UTF-8` set in
+  the Vitest config/env. "Today" comes from an injected clock with a fixed date. UUIDs are
+  injectable where a test asserts on them. Component tests run with CSS transitions and animations
+  disabled via a test stylesheet (`* { transition: none !important; animation: none !important; }`)
+  and `prefers-reduced-motion: reduce`. No random data without a fixed seed.
+- **UI screenshots for VERIFY** (Evidence for UI criteria): captured by a headless Playwright script
+  in a temp directory outside the repo and outside check, against the app in deterministic mode
+  with seeded data. This is not an e2e suite.
 
 ## What must be tested
-<!-- e.g. every business rule (BR-n), every boundary/forbidden dependency; the e2e journeys and
-     budget, if the project has e2e at all (Test layers). -->
+- Every business rule **BR-1…BR-7** (`docs/domain.md`) has unit tests in `packages/domain`, with
+  its edge cases: start = end, a weekend-only range (0 Working days), a range spanning a weekend,
+  a request using exactly the remaining Balance, Pending requests counted in BR-2, overlap by one
+  day, a year-crossing range, and final-Status transitions.
+- Every API endpoint has integration tests for its success path and **each** error code it can
+  return (400/401/403/404/409), asserting the body `code`, not only the status.
+- **Authorization (sensitive area):** for every Status-changing endpoint, tests prove the allowed
+  actor succeeds and that the requester-as-approver, a non-Manager, another team's Manager and an
+  anonymous caller are refused. Reads prove an Employee cannot see another Employee's requests
+  (404). Every Authorization criterion is also proven red by one deliberate break (`prompts/verify.md`).
+- Every UI state a spec lists (empty, loading, error, success, no permission) has a component test.
+- The forbidden dependencies (`docs/architecture.md`) are enforced by the lint step, not by prose.
+- **e2e: none.** No journey is budgeted (Test layers, rule 2). Adding one needs a spec that names
+  the journey and sets a budget here.
 
 ## Test layers
 1. **The cheapest test that proves the criterion.** Unit first, then component or integration

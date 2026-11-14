@@ -8,12 +8,16 @@ AGENTS.md ever disagree, AGENTS.md wins.
 
 ## Current state
 
-This repo is an unconfigured copy of **ANEW** (AI Native Engineering Workspace, base version in
-`.anew-version`): a process workspace written in Markdown and POSIX shell. It has no application
-code and no stack yet. AGENTS.md is `STATUS: NOT CONFIGURED`, so the only valid first action is
-the bootstrap workflow (`workflows/bootstrap.md`, or `/bootstrap`). Bootstrap interviews the human
-and then rewrites `AGENTS.md`, fills `docs/`, and generates `scripts/check.conf`. Write no
-application code before bootstrap finishes.
+This repo is an **ANEW** workspace (base version in `.anew-version`), bootstrapped on 2026-11-14
+for **Leave Manager**, a demo leave-request/approval app. The planned stack is a TypeScript
+monorepo: `packages/domain`, `apps/api` (Fastify + SQLite) and `apps/web` (React + Vite). Mode is
+**lite**, and the only sensitive area is **Authorization**. It is still greenfield with no
+application code. The first spec is the walking skeleton, which creates the toolchain and
+uncomments the planned steps in `scripts/check.conf`. Until then `scripts/check` is a no-op.
+
+On macOS, `/bin/sh` is bash 3.2, which can't parse parts of `scripts/check` and `scripts/doctor`
+(`syntax error near unexpected token ';;'`). Run them with dash locally: `dash ./scripts/check`,
+`dash ./scripts/doctor`. CI on Ubuntu is unaffected.
 
 The Claude Code adapter is installed in `.claude/`. Its source is `adapters/claude-code/`, and
 `./scripts/init claude-code` refreshes it. That keeps this CLAUDE.md unless you pass `--force`.
@@ -32,7 +36,8 @@ subagent, permission denies, and a hook that blocks edits under `specs/done/`.
 | `./scripts/residue [--fast]` | Runs check twice and fails if processes are left running. |
 | `./scripts/init <adapter>` | Installs a tool adapter (`claude-code`, `github-copilot`, `cursor`, `codex`, `generic`). |
 
-`scripts/check` fails until bootstrap creates `scripts/check.conf`. The format is in
+`scripts/check.conf` holds the planned steps (format, lint, typecheck, unit [fast];
+integration and build in full only), still commented out. The format is in
 `scripts/check.conf.example`: one `<name>: <command>` per line, plus optional `[fast]` tags and
 `requires <step>: <cmd>` prerequisites. To run a single test, run the test command from the
 relevant `check.conf` step directly. CI (`.github/workflows/check.yml`) runs doctor `--strict`,

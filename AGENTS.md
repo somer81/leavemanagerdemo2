@@ -1,15 +1,14 @@
 # AGENTS.md — Project Rules
 
-> **STATUS: NOT CONFIGURED.** This workspace has not been adapted to a project yet.
-> The only correct first action is the bootstrap workflow (`workflows/bootstrap.md`).
-> Until bootstrap completes and rewrites this file, do not write application code.
+> **Leave Manager (demo)** — employees request leave, managers approve or reject, Annual balance is tracked.
+> Greenfield TypeScript monorepo: `packages/domain` (pure rules) · `apps/api` (Fastify + SQLite) · `apps/web` (React + Vite).
 
 ## Operating mode
 
-**Mode: unset** — bootstrap sets `lite` or `strict` (`workflows/README.md`); every workflow honors its gates.
+**Mode: lite** — set at bootstrap (`workflows/README.md`); every workflow honors its gates. Sensitive area: Authorization (`docs/domain.md`).
 **Start work** with `/new-feature` in lite (it chains the segments and asks at each gate) or with
 `/analyze` in strict (one segment per role). Segment commands always stop (`workflows/segments.md`).
-**Language: unset** — bootstrap sets `chat=<xx> · docs=<xx>`; protocol fields stay English (`docs/conventions.md`).
+**Language: chat=en · docs=en** — set at bootstrap; protocol fields stay English (`docs/conventions.md`).
 
 ## Invariant rules (these survive bootstrap — never delete or weaken them)
 
