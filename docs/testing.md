@@ -42,6 +42,9 @@
 - The forbidden dependencies (`docs/architecture.md`) are enforced by the lint step, not by prose.
 - **e2e: none.** No journey is budgeted (Test layers, rule 2). Adding one needs a spec that names
   the journey and sets a budget here.
+- **No coverage threshold** (re-confirmed at bootstrap 2026-11-14). The criterion ↔ test map and
+  "every BR has tests" are the contract. Coverage is not measured or gated in check. Introducing a
+  gate needs a spec.
 
 ## Test layers
 1. **The cheapest test that proves the criterion.** Unit first, then component or integration
