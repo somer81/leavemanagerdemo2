@@ -41,8 +41,14 @@ export function checkSpec(markdown: string, fileName: string): string[] {
   const status = statusOf(markdown);
   if (!status || !JUDGED_STATUSES.has(status)) return [];
 
+  // A mini-spec is told apart by its mandatory `- Source:` header (specs/TEMPLATE-mini.md), never by a
+  // missing section — a misspelled heading must not turn a full spec into a mini (review round 1, F-3).
+  const isMini = /^- Source:/m.test(markdown);
   const userExperience = section(markdown, 'User experience');
-  if (userExperience !== undefined) {
+  if (!isMini) {
+    if (userExperience === undefined) {
+      return [`${fileName}: no "## User experience" section — the full spec template requires it`];
+    }
     const body = stripComments(userExperience).trim();
     if (body.startsWith(NO_UI)) return [];
     const value = /^\s*- Design reference:[ \t]*(.*?)\s*$/m.exec(body)?.[1] ?? '';

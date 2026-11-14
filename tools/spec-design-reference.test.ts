@@ -122,6 +122,15 @@ describe('checkSpec — full specs', () => {
     expect(checkSpec(uiSpec('Approved', `- Design reference: ${value}`), 'f.md')).toHaveLength(1);
   });
 
+  it.each(['## User Experience', '## User experience:', '## UX'])(
+    'fails a full spec whose User experience heading is missing or misspelled: %s',
+    (heading) => {
+      // Review round 1, F-3: without the mini's `- Source:` header it is a full spec, not a mini-spec.
+      const spec = uiSpec('Approved', '').replace('## User experience', heading);
+      expect(checkSpec(spec, 'f.md')).toEqual([expect.stringContaining('## User experience')]);
+    },
+  );
+
   it('ignores a design reference that only appears inside an HTML comment', () => {
     const ux = `<!-- - Design reference: ${LINK} · version: v1 · approved 2026-11-14 -->\n- Flow: x`;
     expect(checkSpec(fullSpec('Approved', ux), 'f.md')).toHaveLength(1);
