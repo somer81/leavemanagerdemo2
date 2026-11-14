@@ -64,6 +64,7 @@
 - ESM/CommonJS mixups (`require` in ESM, missing extensions) — everything is ESM; TS `moduleResolution: "nodenext"` for api/domain and `"bundler"` for web — from bootstrap.
 - Only `VITE_*` env vars reach the browser bundle, and anything there is public — never put secrets in `VITE_*` — from bootstrap.
 - Fastify `inject()` tests leave open handles unless the app is closed — `await app.close()` in `afterEach`/`afterAll` — from bootstrap.
+- A new npm workspace without a Vitest project in `vitest.config.ts` runs its tests in neither check profile while check stays green — add the project; `tools/vitest-projects.test.ts` fails until you do — from spec 0001, review round 1 F-4.
 
 ## Enforced by tooling
 - **format** step: Prettier (`.prettierrc.json`, 100 cols, single quotes) on all code and config files. Process Markdown is excluded (`.prettierignore`).
