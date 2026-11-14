@@ -13,3 +13,6 @@ step 7). Nothing lands here without that decision; noise is rejected in the tria
   — Recommendation: <the reviewer's action> — Deferred by: <name>, <YYYY-MM-DD>, <why>
   A decision deferred at bootstrap (its REPORT) uses Source: bootstrap <YYYY-MM-DD>.
 -->
+
+- **B-1** — `scripts/check` and `scripts/doctor` abort under macOS `/bin/sh` (bash 3.2) with `syntax error near unexpected token ';;'` (a `case … )` inside `$( … )`, check line 69 / doctor line 98) — Source: bootstrap 2026-11-14 — Severity: Medium (local only; CI on Ubuntu/dash unaffected)
+  — Recommendation: fix through its own spec (make the parsing bash-3.2-safe, add a selftest scenario under bash 3.2) or adopt an upstream ANEW fix; until then run `dash ./scripts/check` / `dash ./scripts/doctor` (CLAUDE.md) — Deferred by: somer81, 2026-11-14, walking skeleton comes first; workaround is reliable
