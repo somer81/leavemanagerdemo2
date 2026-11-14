@@ -38,6 +38,17 @@ describe('StartPage', () => {
     expect(screen.getByRole('status')).toHaveTextContent('Service unavailable');
   });
 
+  it('shows unavailable on an error status even when the body says ok', async () => {
+    // VERIFY round 1, F-QA-1: the HTTP status alone must decide (AC-8 "answers with an error status").
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async () => jsonResponse(503, { status: 'ok' })),
+    );
+    render(<StartPage />);
+
+    expect(await screen.findByText('Service unavailable')).toBeInTheDocument();
+  });
+
   it('shows unavailable on network failure', async () => {
     vi.stubGlobal(
       'fetch',
