@@ -66,7 +66,13 @@
 - Fastify `inject()` tests leave open handles unless the app is closed — `await app.close()` in `afterEach`/`afterAll` — from bootstrap.
 - A new npm workspace without a Vitest project in `vitest.config.ts` runs its tests in neither check profile while check stays green — add the project; `tools/vitest-projects.test.ts` fails until you do — from spec 0001, review round 1 F-4.
 
+## Design references
+- A UI spec links a pinned Claude Design artifact (or a named waiver) as its Design reference. The rules
+  and the exact line format are in `docs/testing.md`, "Design references (Claude Design artifacts)".
+
 ## Enforced by tooling
+- **unit** step: open specs' Design references (`docs/testing.md`, Design references), checked by
+  `tools/spec-design-reference.test.ts` (spec 0002).
 - **format** step: Prettier (`.prettierrc.json`, 100 cols, single quotes) on all code and config files. Process Markdown is excluded (`.prettierignore`).
 - **lint** step: ESLint recommended + typescript-eslint recommended + react-hooks, `--max-warnings=0`, and the
   forbidden dependencies of `docs/architecture.md`, including the ban on `Date.now()`, `Date()` and argument-less

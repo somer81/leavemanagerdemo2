@@ -58,6 +58,9 @@ selftest, and the full check.
   tool-agnostic. `adapters/` is thin per-tool wiring that only points into the core and never
   restates rules (ADR `docs/decisions/anew/ANEW-0001`). Workflows reference prompts in `prompts/`
   and never copy them.
+- **Design references:** a UI spec's `## User experience` links a Claude Design artifact pinned by the
+  publish label `spec NNNN approved` (or a named waiver). Make it during ANALYZE with the Artifact tool's
+  Design type. Check enforces the line format (`docs/testing.md`, Design references).
 - **Specs lifecycle:** `specs/active/` (from `specs/TEMPLATE.md` or `TEMPLATE-mini.md`) →
   `specs/plans/NNNN-plan.md` → shipped to `specs/done/`, which is immutable. Deferred findings go
   to `specs/backlog.md`. When something goes wrong, use a ramp in `prompts/recovery/` instead of

@@ -106,6 +106,37 @@ human's visual sign-off.
 
 A screenshot proves a criterion only against the spec's "User experience": every state it lists
 (empty, loading, error, success, no permission), compared with the linked design if there is one.
+In this project every UI spec has one: the pinned Claude Design artifact (next section). VERIFY
+compares each screenshot with that version.
+
+## Design references (Claude Design artifacts)
+Set by spec 0002. It is enforced by `tools/spec-design-reference.test.ts` in the fast `unit` step.
+
+1. **When.** Every spec whose `## User experience` does not begin with `none — no user interface` is a
+   UI spec, and it needs a design reference. So does a CHANGE-lane mini-spec that touches a UI, in its
+   `- Design:` field. A mini-spec that touches no UI leaves `- Design:` empty or writes
+   `- Design: none — no user interface`. Check can't tell whether a mini-spec touches a UI, so an empty
+   `- Design:` on a UI change is a review finding.
+2. **What.** The Analyst creates (or reuses) a **Claude Design artifact** (Artifact tool, Design
+   type) that shows **every screen state the spec lists**, and the human looks at it at the spec
+   approval gate. Just before that gate, the Analyst publishes it with the label `spec NNNN approved`.
+3. **The line.** In `## User experience`:
+   `- Design reference: https://claude.ai/artifact/<id> · version: spec NNNN approved · approved <YYYY-MM-DD>`
+   (a `https://claude.ai/code/artifact/<uuid>` link is accepted too). A mini-spec uses the same value
+   in `- Design:`. The design itself is never copied into the repo (Evidence policy).
+4. **Waiver.** A UI spec goes without a design only by the human's decision at the spec approval
+   gate: `- Design reference: none — waived by <name>, <YYYY-MM-DD>, <reason>`. ANEW's template
+   wording "none — the flow above is the design" is **not accepted** for UI specs here.
+5. **Pinned.** After approval the artifact is not republished until the spec ships. A design change
+   that should count is a spec change (R-08): republish with a new label and record the new line,
+   then re-approve. So the artifact's current version is always the pinned one when VERIFY reads it.
+6. **VERIFY.** Each UI screenshot is compared with the pinned design. A visible difference in
+   content, structure or state (text, elements, which states exist) is a finding. Pixel-level styling
+   is not, unless the spec says so.
+7. **What is judged.** Open specs (`specs/active/`) with `Status: Approved` or `In progress`. A `Draft`
+   is exempt (the design is made during ANALYZE). Shipped specs in `specs/done/` are never judged.
+   Check reads only the text and never opens the link: an artifact the reviewer can't open is a
+   review finding. Artifacts are private by default, and sharing one is the human's decision.
 
 ## Evidence policy
 1. **Evidence is referenced, not stored.** Each acceptance criterion's evidence is a pointer: the
