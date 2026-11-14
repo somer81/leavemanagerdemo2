@@ -19,3 +19,6 @@ step 7). Nothing lands here without that decision; noise is rejected in the tria
 
 - **B-2** — `scripts/residue` reports false RESIDUE FOUND on macOS: on-demand system services (parent `launchd`, PID 1) and Claude Code's own `caffeinate` (parent `claude`, an ancestor of the run) are counted as check's survivors; the flagged set differs per run, no toolchain process survives — Source: spec 0001, BUILD step 6 (residue gate) — Severity: Low (local only; misleads the gate, hides nothing)
   — Recommendation: fix through its own spec or upstream ANEW (on macOS, ignore launchd-parented system paths `/usr/libexec/*`, `/System/*`, and processes whose parent chain predates the baseline), or run residue on Linux — Deferred by: somer81, 2026-11-14, evidence in plan 0001 Build evidence; fast profile clean
+
+- **B-3** — `apps/api/src/app.ts` uses Fastify's default error and not-found handlers (`{statusCode, error, message}`), not the `{ code, message }` / `500 INTERNAL` convention of `docs/conventions.md` — Source: spec 0001, review round 1 (F-5, `apps/api/src/app.ts:9-13`) — Severity: Info
+  — Recommendation: the first API spec that adds a route with inputs plans `setErrorHandler` / `setNotFoundHandler` with tests — Deferred by: somer81, 2026-11-14, nothing in spec 0001 can produce an error
