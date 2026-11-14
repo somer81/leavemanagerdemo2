@@ -1,0 +1,16 @@
+# ANEW workspace files (Markdown process docs) are not formatted by Prettier.
+*.md
+.anew-dev/
+.agents/
+.claude/
+.github/
+adapters/
+docs/
+prompts/
+specs/
+workflows/
+scripts/
+# Generated
+node_modules/
+dist/
+package-lock.json
