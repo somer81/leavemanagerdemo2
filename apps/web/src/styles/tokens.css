@@ -1,0 +1,35 @@
+/*
+ * Leave Manager design tokens — the app's copy of the design system's tokens.json.
+ * Source: https://claude.ai/artifact/WAGKyU2cSBtmzaNUdhB8bi (version 1794657787-35e0).
+ * Values are copied exactly; names match the design system. Change them only through a /change
+ * that updates this header's version (spec 0003, G1). Every screen uses these via var(--…).
+ */
+:root {
+  /* color — light theme */
+  --surface: #f4f6f5;
+  --surface-raised: #ffffff;
+  --ink: #17231f;
+  --ink-muted: #55625d;
+  --brand: #1e5b4b;
+  --on-brand: #ffffff;
+  --brand-tint: #dfe9e5;
+  --status-pending: #8c5300;
+  --status-approved: #1d5fa8;
+  --status-rejected: #b42318;
+
+  /* spacing */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-4: 16px;
+  --space-6: 24px;
+
+  /* radius */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-pill: 999px;
+
+  /* type families — web fonts first, system stacks as the fallback (spec 0003, CB-5) */
+  --font-display: 'Bricolage Grotesque', 'Public Sans', system-ui, sans-serif;
+  --font-sans: 'Public Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+}

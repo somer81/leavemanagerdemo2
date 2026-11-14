@@ -34,12 +34,21 @@ export function StartPage() {
     return () => controller.abort();
   }, []);
 
+  // Layout and classes follow the pinned design (spec 0003, "Start Page Restyle" canvas).
   return (
-    <main>
-      <h1>Leave Manager</h1>
-      <p role="status" aria-live="polite">
-        {STATUS_TEXT[status]}
-      </p>
+    <main className="page">
+      <header className="page-header">
+        <h1 className="display">Leave Manager</h1>
+        <p className="tagline">Request, approve and count leave in working days.</p>
+      </header>
+      <section className="card" aria-labelledby="service-label">
+        <p className="label" id="service-label">
+          Service
+        </p>
+        <p className="status" role="status" aria-live="polite" data-state={status}>
+          {STATUS_TEXT[status]}
+        </p>
+      </section>
     </main>
   );
 }

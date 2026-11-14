@@ -1,0 +1,102 @@
+/*
+ * Base styles for Leave Manager screens (spec 0003). Only design tokens from tokens.css — no
+ * literal colors. Rules: the design system's README, "Visual foundations".
+ */
+body {
+  margin: 0;
+  background: var(--surface);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-size: 15px;
+  line-height: 22px;
+}
+
+/* One centered column at every width, no breakpoint (spec 0003, CB-3 / G4). */
+.page {
+  box-sizing: border-box;
+  max-width: 560px;
+  margin-inline: auto;
+  padding-inline: var(--space-4);
+  padding-block: calc(var(--space-6) * 2);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+.page-header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+/* `display` style: the product name, once per screen. */
+.display {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 48px;
+  line-height: 52px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--brand);
+  text-wrap: balance;
+}
+
+/* `caption` style. */
+.tagline {
+  margin: 0;
+  font-size: 13px;
+  line-height: 18px;
+  color: var(--ink-muted);
+}
+
+.card {
+  background: var(--surface-raised);
+  border-radius: var(--radius-md);
+  padding: var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+/* `label` style. */
+.label {
+  margin: 0;
+  font-size: 12px;
+  line-height: 16px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+}
+
+.status {
+  margin: 0;
+}
+
+/* Each state is told by its words; the color only supports them (spec 0003, CB-2). */
+.status[data-state='checking'] {
+  color: var(--ink-muted);
+}
+
+.status[data-state='ok'] {
+  color: var(--ink);
+}
+
+.status[data-state='unavailable'] {
+  color: var(--status-rejected);
+}
+
+/* Focus: a solid 2px brand ring with a 2px offset on every focusable control. */
+:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition: none !important;
+    animation: none !important;
+  }
+}

@@ -69,3 +69,52 @@ describe('StartPage', () => {
     expect(await screen.findByText('Service unavailable')).toBeInTheDocument();
   });
 });
+
+describe('StartPage — design system restyle (spec 0003)', () => {
+  it('shows the product name and tagline', () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(() => new Promise<Response>(() => {})),
+    );
+    render(<StartPage />);
+
+    expect(screen.getByRole('heading', { level: 1, name: 'Leave Manager' })).toHaveClass('display');
+    expect(screen.getByText('Request, approve and count leave in working days.')).toHaveClass(
+      'tagline',
+    );
+    expect(screen.getByText('Service')).toHaveClass('label');
+  });
+
+  it.each([
+    ['checking', () => new Promise<Response>(() => {}), 'Checking service…'],
+    ['ok', async () => jsonResponse(200, { status: 'ok' }), 'Service: OK'],
+    ['unavailable', async () => jsonResponse(500, { code: 'INTERNAL' }), 'Service unavailable'],
+  ] as const)('marks each state with data-state: %s', async (state, respond, text) => {
+    vi.stubGlobal('fetch', vi.fn(respond));
+    render(<StartPage />);
+
+    const status = screen.getByRole('status');
+    await vi.waitFor(() => expect(status).toHaveTextContent(text));
+    expect(status).toHaveAttribute('data-state', state);
+    expect(status).toHaveClass('status');
+  });
+
+  it('keeps the status polite', () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(() => new Promise<Response>(() => {})),
+    );
+    render(<StartPage />);
+
+    expect(screen.getByRole('status')).toHaveAttribute('aria-live', 'polite');
+  });
+
+  it('asks the service exactly once', async () => {
+    const fetchMock = vi.fn(async () => jsonResponse(200, { status: 'ok' }));
+    vi.stubGlobal('fetch', fetchMock);
+    render(<StartPage />);
+
+    expect(await screen.findByText('Service: OK')).toBeInTheDocument();
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+  });
+});
