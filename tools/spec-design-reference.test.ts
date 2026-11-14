@@ -1,8 +1,10 @@
 // Spec 0002: an open UI spec's Design reference is a pinned Claude Design artifact or a named waiver
 // (docs/testing.md, "Design references (Claude Design artifacts)").
+import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
+import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it } from 'vitest';
 import { checkOpenSpecs, checkSpec } from './spec-design-reference.ts';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
@@ -138,18 +140,28 @@ describe('checkSpec — mini-specs (spec 0002, G6)', () => {
 });
 
 describe('checkOpenSpecs — this repository', () => {
+  const tmpRoots: string[] = [];
+  afterEach(() => {
+    // resource hygiene / data rule 5: nothing a run writes reaches the next run
+    for (const dir of tmpRoots.splice(0)) rmSync(dir, { recursive: true, force: true });
+  });
+
   it('open specs in this repository comply', () => {
     expect(checkOpenSpecs(root)).toEqual([]);
   });
 
-  it('ignores specs/done', () => {
-    // specs/done/0001-walking-skeleton.md is a UI spec with "Design reference: none. The flow above is the
-    // design." — it would fail if judged, yet it is shipped and immutable (spec 0002, AC-6).
-    const shipped = checkSpec(
-      fullSpec('Approved', '- Flow: x\n- Design reference: none. The flow above is the design.'),
-      'specs/done/0001-walking-skeleton.md',
-    );
-    expect(shipped).toHaveLength(1); // the content alone would fail…
-    expect(checkOpenSpecs(root).some((v) => v.includes('specs/done/'))).toBe(false); // …but done/ is never read
+  it('does not judge specs in specs/done', () => {
+    // Review round 1, F-1: an Approved UI spec with no design, placed in specs/done/ of a temporary
+    // root outside the repo, would be a violation if done/ were read (spec 0002, AC-6).
+    const tmpRoot = mkdtempSync(path.join(os.tmpdir(), 'spec-design-reference-'));
+    tmpRoots.push(tmpRoot);
+    mkdirSync(path.join(tmpRoot, 'specs', 'active'), { recursive: true });
+    mkdirSync(path.join(tmpRoot, 'specs', 'done'), { recursive: true });
+    writeFileSync(path.join(tmpRoot, 'specs', 'done', '0009-x.md'), uiSpec('Approved', ''));
+    expect(checkSpec(uiSpec('Approved', ''), 'probe.md')).toHaveLength(1); // judged if read…
+    expect(checkOpenSpecs(tmpRoot)).toEqual([]); // …but done/ is never read
+
+    writeFileSync(path.join(tmpRoot, 'specs', 'active', '0009-x.md'), uiSpec('Approved', ''));
+    expect(checkOpenSpecs(tmpRoot)).toEqual([expect.stringContaining('specs/active/0009-x.md')]);
   });
 });
