@@ -69,8 +69,13 @@
 ## Design references
 - A UI spec links a pinned Claude Design artifact (or a named waiver) as its Design reference. The rules
   and the exact line format are in `docs/testing.md`, "Design references (Claude Design artifacts)".
+- The app's copy of the design system's tokens is `apps/web/src/styles/tokens.css`: values copied exactly, names unchanged,
+  the source version in its header. Screens use only `var(--…)` from it, and base styles live in `apps/web/src/styles/base.css`.
+  A design-system change reaches the app only through a `/change` that updates that header (spec 0003).
 
 ## Enforced by tooling
+- **unit** step: the app's stylesheets (`apps/web/src/styles/styles.test.ts`, spec 0003): every `var(--…)` is defined in
+  `tokens.css`, `base.css` has no literal colors, and the state → token mapping, column width and font fallbacks hold.
 - **unit** step: open specs' Design references (`docs/testing.md`, Design references), checked by
   `tools/spec-design-reference.test.ts` (spec 0002).
 - **format** step: Prettier (`.prettierrc.json`, 100 cols, single quotes) on all code and config files. Process Markdown is excluded (`.prettierignore`).
