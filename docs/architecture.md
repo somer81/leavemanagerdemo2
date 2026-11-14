@@ -11,7 +11,8 @@ monorepo** (npm workspaces): a pure domain package holds every business rule, a 
 persists to a single-file SQLite database, and a React single-page app talks to the API over
 HTTP/JSON. This style was chosen because it's a demo: one language, one process to run, no
 container or database server, and the rules are tested once in `packages/domain`. The SQLite
-driver choice is confirmed (or recorded as an ADR) in the walking-skeleton spec.
+driver choice is confirmed (or recorded as an ADR) by the first spec that persists data
+(`docs/conventions.md`).
 
 ## Modules / components and ownership
 
@@ -20,6 +21,13 @@ driver choice is confirmed (or recorded as an ADR) in the walking-skeleton spec.
 | `packages/domain` | The business rules BR-1…BR-7, Working-day counting and Balance math, as pure functions that return result values | The meaning of Leave request, Status transitions, Balance (no storage) |
 | `apps/api` | HTTP API: session/identity, authorization, input validation, persistence; routes → services → repository | Employees, reporting lines, Allowances, Leave requests (the SQLite database) |
 | `apps/web` | Browser UI: login (pick a seeded user), request leave, my requests and Balance, Manager's approval list | UI state only, with no business data of its own |
+
+## Running locally
+
+- `npm ci` once, then `npm run dev`: the API on `http://127.0.0.1:3000` (`API_PORT` to change it) and the
+  web dev server on `http://localhost:5173`, which proxies `/api` to the API. Ctrl+C stops both.
+- `node --watch` runs the API's TypeScript directly (Node 26 type stripping) and Vite serves the web app.
+  Neither dev server is ever part of `scripts/check`.
 
 ## Communication rules
 

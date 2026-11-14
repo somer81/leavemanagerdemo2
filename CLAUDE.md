@@ -9,11 +9,11 @@ AGENTS.md ever disagree, AGENTS.md wins.
 ## Current state
 
 This repo is an **ANEW** workspace (base version in `.anew-version`), bootstrapped on 2026-11-14
-for **Leave Manager**, a demo leave-request/approval app. The planned stack is a TypeScript
-monorepo: `packages/domain`, `apps/api` (Fastify + SQLite) and `apps/web` (React + Vite). Mode is
-**lite**, and the only sensitive area is **Authorization**. It is still greenfield with no
-application code. The first spec is the walking skeleton, which creates the toolchain and
-uncomments the planned steps in `scripts/check.conf`. Until then `scripts/check` is a no-op.
+for **Leave Manager**, a demo leave-request/approval app. It is a TypeScript monorepo (npm
+workspaces, Node 26, TS 6.0.x): `packages/domain` (pure rules), `apps/api` (Fastify, SQLite
+planned) and `apps/web` (React + Vite). Mode is **lite**, and the only sensitive area is
+**Authorization**. Spec 0001 (walking skeleton) created the toolchain, the BR-1 working-day
+count, `GET /api/health`, the start page and the lint-enforced boundaries.
 
 On macOS, `/bin/sh` is bash 3.2, which can't parse parts of `scripts/check` and `scripts/doctor`
 (`syntax error near unexpected token ';;'`). Run them with dash locally: `dash ./scripts/check`,
@@ -34,10 +34,12 @@ subagent, permission denies, and a hook that blocks edits under `specs/done/`.
 | `./scripts/doctor` / `--strict` | Workspace health: required files, config, spec/plan gate consistency, `specs/done/` immutability. CI runs `--strict`, which turns gate warnings into failures. |
 | `./scripts/selftest` | Self-test of check/doctor/residue in throwaway temp copies. Runs in CI. |
 | `./scripts/residue [--fast]` | Runs check twice and fails if processes are left running. |
+| `npm ci` · `npm run dev` | Install from the lockfile · start API (:3000) + web (:5173, proxies `/api`) together. Dev only, never in check. |
+| `npx vitest run --project <domain\|api\|web\|tools> [file filter]` | Run one project or one test file (authoring only; check is the evidence). |
 | `./scripts/init <adapter>` | Installs a tool adapter (`claude-code`, `github-copilot`, `cursor`, `codex`, `generic`). |
 
-`scripts/check.conf` holds the planned steps (format, lint, typecheck, unit [fast];
-integration and build in full only), still commented out. The format is in
+`scripts/check.conf` steps: format, lint, typecheck, unit `[fast]`; integration (`*.int.test.ts`) and
+build run in full only. The format is in
 `scripts/check.conf.example`: one `<name>: <command>` per line, plus optional `[fast]` tags and
 `requires <step>: <cmd>` prerequisites. To run a single test, run the test command from the
 relevant `check.conf` step directly. CI (`.github/workflows/check.yml`) runs doctor `--strict`,
