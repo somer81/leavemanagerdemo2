@@ -61,9 +61,11 @@ export function checkSpec(markdown: string, fileName: string): string[] {
   const design = /^- Design:[ \t]*(.*?)\s*$/m.exec(markdown)?.[1];
   if (design === undefined) return [];
   const value = stripComments(design).trim();
-  if (value === '' || isValidReference(value)) return [];
+  // Empty, or the explicit no-UI form (R-3 for mini-specs, review round 1 F-4), means no UI change.
+  if (value === '' || value.startsWith(NO_UI) || isValidReference(value)) return [];
   return [
-    `${fileName}: Design field "${value}" — ${EXPECTED_FORMAT.replaceAll('Design reference', 'Design')}`,
+    `${fileName}: Design field "${value}" — ${EXPECTED_FORMAT.replaceAll('Design reference', 'Design')}` +
+      `, or "- Design: ${NO_UI}" (or empty) when the change touches no UI`,
   ];
 }
 

@@ -114,8 +114,9 @@ Set by spec 0002. It is enforced by `tools/spec-design-reference.test.ts` in the
 
 1. **When.** Every spec whose `## User experience` does not begin with `none — no user interface` is a
    UI spec, and it needs a design reference. So does a CHANGE-lane mini-spec that touches a UI, in its
-   `- Design:` field. Check can't tell whether a mini-spec touches a UI, so an empty `- Design:` on a
-   UI change is a review finding.
+   `- Design:` field. A mini-spec that touches no UI leaves `- Design:` empty or writes
+   `- Design: none — no user interface`. Check can't tell whether a mini-spec touches a UI, so an empty
+   `- Design:` on a UI change is a review finding.
 2. **What.** The Analyst creates (or reuses) a **Claude Design artifact** (Artifact tool, Design
    type) that shows **every screen state the spec lists**, and the human looks at it at the spec
    approval gate. Just before that gate, the Analyst publishes it with the label `spec NNNN approved`.

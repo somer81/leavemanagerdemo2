@@ -143,6 +143,15 @@ describe('checkSpec — mini-specs (spec 0002, G6)', () => {
     expect(checkSpec(miniSpec('Approved', '<!-- UI change only -->'), 'm.md')).toEqual([]);
   });
 
+  it('passes a mini-spec that says it has no user interface', () => {
+    // Review round 1, F-4: R-3 applies to mini-specs too (G6).
+    expect(checkSpec(miniSpec('Approved', 'none — no user interface'), 'm.md')).toEqual([]);
+    expect(checkSpec(miniSpec('Approved', 'none — no user interface (API only)'), 'm.md')).toEqual(
+      [],
+    );
+    expect(checkSpec(miniSpec('Approved', 'none'), 'm.md')).toHaveLength(1);
+  });
+
   it('validates a filled-in Design field', () => {
     expect(checkSpec(miniSpec('Approved', 'see figma'), 'm.md')).toHaveLength(1);
     expect(
