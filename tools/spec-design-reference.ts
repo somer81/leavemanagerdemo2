@@ -17,8 +17,10 @@ const EXPECTED_FORMAT =
 
 const stripComments = (text: string): string => text.replace(/<!--[\s\S]*?-->/g, '');
 
+/** The Status value with HTML comments removed, as scripts/doctor reads it (review round 1, F-2). */
 function statusOf(markdown: string): string | undefined {
-  return /^- Status:\s*(.+?)\s*$/m.exec(markdown)?.[1];
+  const raw = /^- Status:[ \t]*(.*)$/m.exec(markdown)?.[1];
+  return raw === undefined ? undefined : stripComments(raw).trim();
 }
 
 /** The body of a `## <heading>` section, up to the next `## ` heading. */

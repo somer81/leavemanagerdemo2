@@ -102,6 +102,12 @@ describe('checkSpec — full specs', () => {
     expect(checkSpec(uiSpec(status, ''), 'f.md')).toHaveLength(1);
   });
 
+  it('judges a Status with a trailing comment like doctor does', () => {
+    // Review round 1, F-2: doctor strips <!-- … --> from the Status before comparing.
+    expect(checkSpec(uiSpec('Approved <!-- by somer81 -->', ''), 'f.md')).toHaveLength(1);
+    expect(checkSpec(uiSpec('Draft <!-- design pending -->', ''), 'f.md')).toEqual([]);
+  });
+
   it('rejects the template wording', () => {
     const line = '- Design reference: none — the flow above is the design.';
     expect(checkSpec(uiSpec('Approved', line), 'f.md')).toHaveLength(1);
