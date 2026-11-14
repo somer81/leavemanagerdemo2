@@ -94,7 +94,36 @@ describe('design tokens (spec 0003, CB-4)', () => {
     const literal = stripComments(baseCss).match(/#[0-9a-f]{3,8}\b|\brgba?\(|\bhsla?\(/gi) ?? [];
     expect(literal).toEqual([]);
   });
+
+  it('every color in base.css comes from a token', () => {
+    // Review round 1, L-1: an allow-list closes the whole class — named colors, `transparent`,
+    // oklch()/lab()/hwb()/color-mix() — not only hex/rgb/hsl.
+    expect(colorsNotFromTokens(baseCss)).toEqual([]);
+    expect(colorsNotFromTokens('.a { color: red; }')).toEqual(['color: red']);
+    expect(colorsNotFromTokens('.a { background: transparent; }')).toEqual([
+      'background: transparent',
+    ]);
+    expect(colorsNotFromTokens('.a { border: 1px solid oklch(50% 0.1 30); }')).toHaveLength(1);
+    expect(
+      colorsNotFromTokens('.a { outline-color: color-mix(in srgb, red, blue); }'),
+    ).toHaveLength(1);
+    expect(colorsNotFromTokens('.a { color: var(--ink); outline: none; }')).toEqual([]);
+  });
 });
+
+/** Properties that paint a color (review round 1, L-1). Sizes like border-radius are not here. */
+const COLOR_PROPERTY =
+  /^(color|background|background-color|border|border-(top|right|bottom|left)|border(-(top|right|bottom|left))?-color|outline|outline-color|fill|stroke|box-shadow|text-decoration-color|caret-color|accent-color)$/;
+const COLOR_KEYWORDS = new Set(['none', 'inherit', 'currentColor']);
+
+/** Color declarations whose value neither uses a token nor is a non-color keyword. */
+function colorsNotFromTokens(css: string): string[] {
+  return [...stripComments(css).matchAll(/([a-z-]+)\s*:\s*([^;{}]+);/g)]
+    .map((m) => [m[1] as string, (m[2] as string).trim()] as const)
+    .filter(([property]) => COLOR_PROPERTY.test(property))
+    .filter(([, value]) => !value.includes('var(--') && !COLOR_KEYWORDS.has(value))
+    .map(([property, value]) => `${property}: ${value}`);
+}
 
 describe('start page styles (spec 0003)', () => {
   it('page ground, heading and tagline use design tokens (CB-1)', () => {
