@@ -120,6 +120,10 @@ Set by spec 0002. It is enforced by `tools/spec-design-reference.test.ts` in the
 2. **What.** The Analyst creates (or reuses) a **Claude Design artifact** (Artifact tool, Design
    type) that shows **every screen state the spec lists**, and the human looks at it at the spec
    approval gate. Just before that gate, the Analyst publishes it with the label `spec NNNN approved`.
+   Build every design on the **Leave Manager design system**
+   (https://claude.ai/artifact/WAGKyU2cSBtmzaNUdhB8bi): read its README first, then use its colour,
+   type, spacing and status rules. A design that needs something the system doesn't have gets it
+   added to the system first, rather than inventing it in that one design.
 3. **The line.** In `## User experience`:
    `- Design reference: https://claude.ai/artifact/<id> · version: spec NNNN approved · approved <YYYY-MM-DD>`
    (a `https://claude.ai/code/artifact/<uuid>` link is accepted too). A mini-spec uses the same value
