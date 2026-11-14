@@ -21,9 +21,11 @@ export function parseCalendarDate(input: string): Result<CalendarDate, 'INVALID_
   const year = Number(match[1]);
   const month = Number(match[2]);
   const day = Number(match[3]);
-  const utcMs = Date.UTC(year, month - 1, day);
-  const roundTrip = new Date(utcMs);
-  // Date.UTC rolls over (2026-02-30 → 2026-03-02); a round-trip mismatch means the date doesn't exist.
+  // setUTCFullYear, not Date.UTC: Date.UTC maps years 0–99 to 1900–1999 (review round 1, F-1).
+  const roundTrip = new Date(0);
+  roundTrip.setUTCFullYear(year, month - 1, day);
+  const utcMs = roundTrip.getTime();
+  // Out-of-range parts roll over (2026-02-30 → 2026-03-02); a round-trip mismatch means the date doesn't exist.
   if (
     roundTrip.getUTCFullYear() !== year ||
     roundTrip.getUTCMonth() !== month - 1 ||

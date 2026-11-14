@@ -29,6 +29,16 @@ describe('parseCalendarDate', () => {
     expect(result.ok).toBe(true);
   });
 
+  it.each(['0050-03-01', '0000-01-01', '0099-12-31'])(
+    'accepts a valid date in years 0000–0099: %s',
+    (input) => {
+      expect(parseCalendarDate(input)).toEqual({
+        ok: true,
+        value: expect.objectContaining({ iso: input }),
+      });
+    },
+  );
+
   it('accepts an ordinary date', () => {
     expect(parseCalendarDate('2026-11-16').ok).toBe(true);
   });
