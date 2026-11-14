@@ -28,6 +28,9 @@
 - A resource the caller may not see answers `404` (not `403`), so the API doesn't reveal whether it
   exists. `403` is only for a visible resource with a forbidden action (e.g. the requester trying to
   approve their own request).
+- **The only exception to default-deny** is the health inquiry `GET /api/health`: no session needed, and it
+  answers `{"status":"ok"}` with nothing more (no version, uptime or environment data). Any new
+  unauthenticated behavior needs its own spec and an entry here (spec 0001, G1).
 - The UI hiding a button is convenience, never protection.
 - This is the sensitive area **Authorization** (`docs/domain.md`).
 

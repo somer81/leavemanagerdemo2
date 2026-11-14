@@ -18,7 +18,10 @@
 - React + Vite (web), Fastify (api), zod (validation), Vitest + Testing Library + jsdom (tests),
   ESLint + Prettier. Exact versions are pinned in the lockfile by the walking-skeleton spec; a
   major upgrade is its own spec.
-- SQLite via Node's built-in `node:sqlite` (preferred: no native build). The walking skeleton confirms it, otherwise an ADR picks the driver.
+- TypeScript is pinned to **6.0.x**: `typescript-eslint` 8.x requires `<6.1.0`. Moving to TypeScript 7 is its own spec (plan 0001, Risk 1).
+- The API runs its TypeScript directly via Node 26's built-in type stripping (no `tsx`/build step), so
+  code must be erasable syntax only (`erasableSyntaxOnly`): no `enum`, `namespace` or parameter properties. Imports use `.ts` extensions.
+- SQLite via Node's built-in `node:sqlite` (preferred: no native build). The first spec that persists data confirms it, otherwise an ADR picks the driver.
 
 ## Naming
 - Domain terms are written exactly as `docs/domain.md` spells them: `LeaveRequest`, `LeaveType`,
@@ -63,7 +66,9 @@
 - Fastify `inject()` tests leave open handles unless the app is closed — `await app.close()` in `afterEach`/`afterAll` — from bootstrap.
 
 ## Enforced by tooling
-<!-- Filled by the walking skeleton as each rule gets wired into scripts/check. Planned: -->
-- TypeScript `strict` (typecheck step), Prettier formatting (format check), ESLint incl. the
-  import-boundary rules of `docs/architecture.md` "Forbidden dependencies" and a ban on
-  `Date.now()` / argument-less `new Date()` in `packages/domain`. Not active until the walking skeleton.
+- **format** step: Prettier (`.prettierrc.json`, 100 cols, single quotes) on all code and config files. Process Markdown is excluded (`.prettierignore`).
+- **lint** step: ESLint recommended + typescript-eslint recommended + react-hooks, `--max-warnings=0`, and the
+  forbidden dependencies of `docs/architecture.md`, including the ban on `Date.now()`, `Date()` and argument-less
+  `new Date()` in `packages/domain` (`eslint.config.js`, proven by `tools/lint-boundaries.test.ts`).
+- **typecheck** step: `tsc` per workspace with `tsconfig.base.json` (`strict`, `noUncheckedIndexedAccess`,
+  `exactOptionalPropertyTypes`, `verbatimModuleSyntax`, `erasableSyntaxOnly`).

@@ -21,6 +21,13 @@ driver choice is confirmed (or recorded as an ADR) in the walking-skeleton spec.
 | `apps/api` | HTTP API: session/identity, authorization, input validation, persistence; routes → services → repository | Employees, reporting lines, Allowances, Leave requests (the SQLite database) |
 | `apps/web` | Browser UI: login (pick a seeded user), request leave, my requests and Balance, Manager's approval list | UI state only, with no business data of its own |
 
+## Running locally
+
+- `npm ci` once, then `npm run dev`: the API on `http://127.0.0.1:3000` (`API_PORT` to change it) and the
+  web dev server on `http://localhost:5173`, which proxies `/api` to the API. Ctrl+C stops both.
+- `node --watch` runs the API's TypeScript directly (Node 26 type stripping) and Vite serves the web app.
+  Neither dev server is ever part of `scripts/check`.
+
 ## Communication rules
 
 - `apps/web` → `apps/api`: HTTP/JSON only, same origin, session cookie. No other channel.
