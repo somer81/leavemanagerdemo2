@@ -43,8 +43,11 @@ export function checkSpec(markdown: string, fileName: string): string[] {
 
   // A mini-spec is told apart by its mandatory `- Source:` header (specs/TEMPLATE-mini.md), never by a
   // missing section — a misspelled heading must not turn a full spec into a mini (review round 1, F-3).
-  const isMini = /^- Source:/m.test(markdown);
+  // Only an uncommented `- Source:` in the header block (before the first `## `) counts, and a spec
+  // with a `## User experience` section is always a full spec (review round 2, F-6).
   const userExperience = section(markdown, 'User experience');
+  const headerBlock = stripComments(markdown.split(/^## /m)[0] ?? '');
+  const isMini = userExperience === undefined && /^- Source:/m.test(headerBlock);
   if (!isMini) {
     if (userExperience === undefined) {
       return [`${fileName}: no "## User experience" section — the full spec template requires it`];

@@ -138,6 +138,32 @@ describe('checkSpec — full specs', () => {
     expect(checkSpec(spec, 'f.md')).toEqual([expect.stringContaining('more than one')]);
   });
 
+  it.each([
+    [
+      'a Source bullet in the Intent',
+      (spec: string) => spec.replace('Fixture.', 'Fixture.\n- Source: customer interviews'),
+    ],
+    [
+      'a Source line inside a comment',
+      (spec: string) => spec.replace('Fixture.', 'Fixture.\n<!--\n- Source: x\n-->'),
+    ],
+    [
+      'a Source line in the header block',
+      (spec: string) => spec.replace('- Mode: lite', '- Mode: lite\n- Source: TICKET-9'),
+    ],
+  ])('judges a full UI spec with %s as a full spec', (_name, withSource) => {
+    // Review round 2, F-6: a spec with "## User experience" is always a full spec.
+    expect(checkSpec(withSource(uiSpec('Approved', '')), 'f.md')).toHaveLength(1);
+  });
+
+  it('treats a Source line inside a header comment as no Source', () => {
+    // Review round 2, F-6: only an uncommented header `- Source:` marks a mini-spec.
+    const spec = uiSpec('Approved', '')
+      .replace('- Mode: lite', '- Mode: lite\n<!--\n- Source: x\n-->')
+      .replace('## User experience', '## User Experience');
+    expect(checkSpec(spec, 'f.md')).toEqual([expect.stringContaining('## User experience')]);
+  });
+
   it('ignores a design reference that only appears inside an HTML comment', () => {
     const ux = `<!-- - Design reference: ${LINK} · version: v1 · approved 2026-11-14 -->\n- Flow: x`;
     expect(checkSpec(fullSpec('Approved', ux), 'f.md')).toHaveLength(1);
